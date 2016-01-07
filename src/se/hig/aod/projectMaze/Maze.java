@@ -2,9 +2,8 @@ package se.hig.aod.projectMaze;
 
 public class Maze {
 	
-	private int Large;
-	private int medium;
-	private int small;
+	private int sizeX;
+	private int sizeY;
 	
 	
 
