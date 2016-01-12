@@ -3,65 +3,90 @@ package builder;
 import java.util.ArrayList;
 
 public class Cell {
-	private boolean visited;
-	private boolean wall;
-	private boolean open;
-//	private boolean[] walls;
-	private int row, column;
-	ArrayList<Cell> neighbours;
-	
-	public Cell(int row, int column) {
-		visited = false;
-//		walls = new boolean[3];
-		this.row = row;
-		this.column = column;
-		neighbours = new ArrayList<Cell>();
-	}
-	
-	/*
-	public void setNorthWall(boolean isOpen) {
-		walls[0] = isOpen;
-	}
-	
-	public void setSouthWall(boolean isOpen) {
-		walls[1] = isOpen;
-	}
-	public void setEastWall(boolean isOpen) {
-		walls[2] = isOpen;
-	}
-	public void setWestWall(boolean isOpen) {
-		walls[3] = isOpen;
-	}*/
-	
-	public void setVisited(boolean visited) {
-		this.visited = visited;
-	}
-	
-	public int getRow() {
-		return row;
-	}
-	
-	public int getColumn() {
-		return column;
-	}
-	
-	public void addNeighbour(Cell neighbours) {
-		this.neighbours.add(neighbours);
-	}
-	
-	@Override
-	public String toString() {
-		return "X: " + row + " Y: " + column;
-	}
-	
-	@Override
-	public boolean equals(Object o) {
-		if(o == null || getClass() != o) 
-			return false;
-		
-		Cell cell = (Cell) o;
-		
-		return this.column == cell.column && this.row == cell.row || this == o; // om x, y koordinaterna stämmer: return true.
-	}
+	 private ArrayList<Cell> cellOut = new ArrayList<Cell>();
+	    private int index;
 
+	    public Cell(int index, ArrayList<Cell> outerCell) {
+	        this.index = index;
+	        this.cellOut = outerCell;
+	    }
+
+	    public Cell(int index) {
+	        this(index, new ArrayList<Cell>());
+	    }
+
+	    public ArrayList<Cell> getCellOut() {
+	        return cellOut;
+	    }
+
+	    public void setOutNodes(ArrayList<Cell> outerCell) {
+	        this.cellOut = outerCell;
+	    }
+
+	    public int getNumberOfNeighbours() {
+	        return cellOut.size();
+	    }
+
+	    public void addToNodes(Cell cell) {
+	        cellOut.add(cell);
+	    }
+
+	    public void removeFromNodes(Cell cell) {
+	        cellOut.remove(cell);
+	    }
+
+	    public String toString() {
+	        String res = "Vertex(" + index + "): {";
+	        if (cellOut.size() == 0) {
+	            return res + "}";
+	        }
+	        for (int i = 0; i < cellOut.size(); i++) {
+	            res = res + cellOut.get(i).getIndex() + " ";
+	        }
+	        return res + "}";
+	    }
+
+	    public int getIndex() {
+	        return index;
+	    }
+
+	    public int neighbourSize() {
+	        return cellOut.size();
+	    }
+
+	    public boolean compareChildren(Cell other) {
+	        if (index != other.getIndex()) {
+	            return false;
+	        }
+	        for (Cell child : cellOut) {
+	            boolean isMatched = false;
+	            for (Cell otherChild : other.getCellOut()) {
+	                if (child.getIndex() == otherChild.getIndex()) {
+	                    isMatched = true;
+	                    break;
+	                }
+	            }
+	            if (!isMatched) {
+	                return isMatched;
+	            }
+	        }
+	        return true;
+	    }
+
+	    @Override
+	    public boolean equals(Object o) {
+	        if (this == o) return true;
+	        if (o == null || getClass() != o.getClass()) return false;
+
+	        Cell vertex = (Cell) o;
+
+	        if (index != vertex.index) return false;
+
+	        return true;
+	    }
+
+	    @Override
+	    public int hashCode() {
+	        return index;
+	    }
 }
