@@ -5,6 +5,7 @@ import java.util.Random;
 import java.util.Stack;
 
 public class RecursiveBacktracker {
+
 	private int width, height;
 	private ArrayList<Cell> cells; 
 	private ArrayList<Cell> paths;
