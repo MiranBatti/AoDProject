@@ -2,7 +2,8 @@ package builder;
 
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.Stack;
+
+import util.ArrayStack;
 
 public class RecursiveBacktracker {
 
@@ -10,7 +11,7 @@ public class RecursiveBacktracker {
 	private ArrayList<Cell> cells; 
 	private ArrayList<Cell> paths;
 	private ArrayList<Boolean> visited;
-	private Stack<Cell> stack;
+	private ArrayStack<Cell> stack;
 	private Random rnd;
 	
 	
@@ -25,7 +26,7 @@ public class RecursiveBacktracker {
 	
 	private void generateMaze() {
 		rnd = new Random();		
-		stack = new Stack<Cell>();		
+		stack = new ArrayStack<Cell>();		
 		
 		Cell cell = getCellIndex(0);
 		stack.push(cell);
