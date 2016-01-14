@@ -2,7 +2,6 @@ package builder;
 
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.Stack;
 
 import model.Cell;
 import util.ArrayStack;
@@ -13,7 +12,7 @@ public class RecursiveBacktracker {
 	private ArrayList<Cell> cells; 
 	private ArrayList<Cell> paths;
 	private ArrayList<Boolean> visited;
-	private Stack<Cell> stack;
+	private ArrayStack<Cell> stack;
 	private Random rnd;
 	
 	
@@ -28,7 +27,7 @@ public class RecursiveBacktracker {
 	
 	private void generateMaze() {
 		rnd = new Random();		
-		stack = new Stack<Cell>();		
+		stack = new ArrayStack<Cell>();		
 		
 		Cell cell = getCellIndex(0);
 		stack.push(cell);
@@ -140,6 +139,7 @@ public class RecursiveBacktracker {
         return (cell.getIndex() % width == width - 1);
     }
 
+    /*
     private boolean hasUp(Cell cell) {
         int upIndex = cell.getIndex() - width;
         return hasPathToIndex(cell, upIndex);
@@ -148,7 +148,7 @@ public class RecursiveBacktracker {
     private boolean hasLeft(Cell cell) {
         int leftIndex = cell.getIndex() - 1;
         return hasPathToIndex(cell, leftIndex);
-    }
+    }*/
 
     public boolean hasRight(Cell cell) {
         int rightIndex = cell.getIndex() + 1;

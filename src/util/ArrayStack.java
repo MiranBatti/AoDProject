@@ -14,17 +14,19 @@ public class ArrayStack<V> implements Stack<V> {
 	
 	private V[] elements;
 	private int top;
+	private int nbrOfElements;
 	
 	@SuppressWarnings("unchecked")
 	public ArrayStack(int capacity) {
 		if(capacity <= 0)
 			throw new IllegalArgumentException("Stack needs to be larger than 0.");
+		nbrOfElements = 0;
 		elements = (V[]) new Object[capacity];
 		top = -1;
 	}
 	
 	public ArrayStack() {
-		this(100);
+		this(10);
 	}
 
 	/** 
@@ -58,6 +60,9 @@ public class ArrayStack<V> implements Stack<V> {
      */
 	@Override
 	public void push(V v) {
+		if(isFull())
+			expandStack();
+		nbrOfElements++;
 		top++;				
 		elements[top] = v;
 	}
@@ -75,6 +80,7 @@ public class ArrayStack<V> implements Stack<V> {
 		V tmp = elements[top];
 		elements[top] = null;
 		top--;
+		nbrOfElements--;
 		return tmp;
 	}
 
@@ -105,5 +111,15 @@ public class ArrayStack<V> implements Stack<V> {
 	 */
 	public boolean isFull() {
 		return size() == elements.length;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void expandStack() {
+		V[] tmp = (V[]) new Object[elements.length * 2];
+		for (int i = 0; i < nbrOfElements; i++) {
+			tmp[i] = elements[i];
+		}
+		
+		elements = tmp;
 	}
 }
