@@ -2,7 +2,9 @@ package builder;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Stack;
 
+import model.Cell;
 import util.ArrayStack;
 
 public class RecursiveBacktracker {
@@ -11,7 +13,7 @@ public class RecursiveBacktracker {
 	private ArrayList<Cell> cells; 
 	private ArrayList<Cell> paths;
 	private ArrayList<Boolean> visited;
-	private ArrayStack<Cell> stack;
+	private Stack<Cell> stack;
 	private Random rnd;
 	
 	
@@ -26,7 +28,7 @@ public class RecursiveBacktracker {
 	
 	private void generateMaze() {
 		rnd = new Random();		
-		stack = new ArrayStack<Cell>();		
+		stack = new Stack<Cell>();		
 		
 		Cell cell = getCellIndex(0);
 		stack.push(cell);
@@ -74,7 +76,7 @@ public class RecursiveBacktracker {
 		return neighbours;
 	}
 	
-	private Cell getCellIndex(int index) {
+	public Cell getCellIndex(int index) {
         return cells.get(index);
     }
 	
@@ -130,7 +132,7 @@ public class RecursiveBacktracker {
         }
 	}
 	
-	private boolean isLeftEdge(Cell cell) {
+	public boolean isLeftEdge(Cell cell) {
         return (cell.getIndex() % width == 0);
     }
 
@@ -148,12 +150,12 @@ public class RecursiveBacktracker {
         return hasPathToIndex(cell, leftIndex);
     }
 
-    private boolean hasRight(Cell cell) {
+    public boolean hasRight(Cell cell) {
         int rightIndex = cell.getIndex() + 1;
         return hasPathToIndex(cell, rightIndex);
     }
 
-    private boolean hasDown(Cell cell) {
+    public boolean hasDown(Cell cell) {
         int downIndex = cell.getIndex() + width;
         return hasPathToIndex(cell, downIndex);
     }
@@ -166,6 +168,22 @@ public class RecursiveBacktracker {
             }
         }
         return false;
+    }
+    
+    public ArrayList<Cell> getPaths() {
+    	return paths;
+    }
+    
+    public Cell getCellAtPaths(int index) {
+    	return paths.get(index);
+    }
+    
+    public int getWidth() {
+    	return width;
+    }
+    
+    public int getHeight() {
+    	return height;
     }
 	
 }
