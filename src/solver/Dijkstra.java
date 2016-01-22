@@ -1,12 +1,10 @@
 package solver;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 
 import builder.RecursiveBacktracker;
-import gui.Board;
 import model.Cell;
 import model.Path;
 
@@ -23,7 +21,6 @@ public class Dijkstra {
 		HashSet<Cell> visited = new HashSet<Cell>();
 		PriorityQueue<Path> availablePaths = new PriorityQueue<Path>();
 		Path path = new Path();
-		ArrayList<Cell> p = maze.getPaths();
 		int size = maze.getHeight() * maze.getWidth();
 		
 		int start = 0;
@@ -46,10 +43,10 @@ public class Dijkstra {
 				return;
 			}
 			
-			for (Cell neighbours : endCell.getCellOut()) {
+			for (Cell neighbours : endCell.getConnectedCells()) {
 				if(!visited.contains(neighbours)) {
 					Path tmp = currentPath.clone();
-					tmp.add(maze.getCellAtPaths(neighbours.getIndex()));
+					tmp.add(maze.getCellInAvailablePaths(neighbours.getIndex()));
 					availablePaths.add(tmp);
 					raiseCellGetsPickeable(neighbours.getIndex());
 				}

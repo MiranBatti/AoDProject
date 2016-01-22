@@ -8,8 +8,8 @@ import solver.PathFinderListener;
 
 import java.awt.*;
 import java.util.*;
-import java.util.List;
 
+@SuppressWarnings("serial")
 public class Board extends JPanel implements PathFinderListener {
 
     private int width;
@@ -47,8 +47,7 @@ public class Board extends JPanel implements PathFinderListener {
         //Top line of maze
         g.drawLine(0, 0, tileWidth * width, 0);
 
-
-        ArrayList<Cell> nodes = maze.getPaths();
+        ArrayList<Cell> cells = maze.getPaths();
 
         for (int i = 0; i < length; i++) {
             int x = i % width;
@@ -65,7 +64,7 @@ public class Board extends JPanel implements PathFinderListener {
             int x = i % width;
             int y = i / width;
 
-            Cell node = nodes.get(i);
+            Cell node = cells.get(i);
             if (maze.isLeftEdge(node)) {
                 g.drawLine(tileWidth * x, tileHeight * y, tileWidth * x, tileHeight * (y + 1));          
             }

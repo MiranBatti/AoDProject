@@ -5,7 +5,12 @@ import java.util.Random;
 
 import model.Cell;
 import util.ArrayStack;
-
+/**
+ * 
+ * @author Miran Batti
+ * @author Fredrik Lindorf
+ *
+ */
 public class RecursiveBacktracker {
 
 	private int width, height;
@@ -14,7 +19,7 @@ public class RecursiveBacktracker {
 	private ArrayList<Boolean> visited;
 	private ArrayStack<Cell> stack;
 	private Random rnd;
-	
+
 	
 	public RecursiveBacktracker(int width, int height) {
 		this.width = width;
@@ -35,22 +40,22 @@ public class RecursiveBacktracker {
 		while(!stack.isEmpty()) {
 			cell = stack.pop();
 			visited.set(cell.getIndex(), true);
-			cell.setOutNodes(getNeighbours(cell));
+			cell.setConnectedCells(getNeighbours(cell));
 			updateCell(cell);
 			
-			if(cell.getCellOut().size() > 0) {
-				ArrayList<Cell> neighbours = cell.getCellOut();
+			if(cell.getConnectedCells().size() > 0) {
+				ArrayList<Cell> neighbours = cell.getConnectedCells();
 				Cell rndNeighbour = neighbours.get(rnd.nextInt(neighbours.size()));
-				cell.removeFromNodes(rndNeighbour);
+				cell.removeFromConnectedCells(rndNeighbour);
 				updateCell(cell);
 				
-				Cell newCell = getCell2Index(cell.getIndex());
-				newCell.addToNodes(rndNeighbour);
-				updateCell2(newCell);
+				Cell newCell = getPathsIndex(cell.getIndex());
+				newCell.addToConnectedCells(rndNeighbour);
+				updatePaths(newCell);
 				
-				Cell rndNewCell = getCell2Index(rndNeighbour.getIndex());
-				rndNewCell.addToNodes(newCell);
-				updateCell2(rndNewCell);
+				Cell rndNewCell = getPathsIndex(rndNeighbour.getIndex());
+				rndNewCell.addToConnectedCells(newCell);
+				updatePaths(rndNewCell);
 				
 				stack.push(cell);
 				stack.push(rndNeighbour);
@@ -79,7 +84,7 @@ public class RecursiveBacktracker {
         return cells.get(index);
     }
 	
-	private Cell getCell2Index(int index) {
+	private Cell getPathsIndex(int index) {
         return paths.get(index);
     }
 	
@@ -87,81 +92,47 @@ public class RecursiveBacktracker {
 		cells.set(newCell.getIndex(), newCell);
 	}
 	
-	private void updateCell2(Cell newCell) {
+	private void updatePaths(Cell newCell) {
 		paths.set(newCell.getIndex(), newCell);
 	}
 	
 	private void initCells(int nbrOfCells) {
 		cells = new ArrayList<Cell>();
-        for (int i = 0; i < nbrOfCells; i++) {
+		
+        for (int i = 0; i < nbrOfCells; i++) 
             cells.add(new Cell(i));
-        }
 	}
 	
 	private void initPathCells(int nbrOfCells) {
 		paths = new ArrayList<Cell>();
-        for (int i = 0; i < nbrOfCells; i++) {
+		
+        for (int i = 0; i < nbrOfCells; i++) 
             paths.add(new Cell(i));
-        }
-	}
+    }
 	
 	private void initVisited(int nbrOfCells) {
 		visited = new ArrayList<Boolean>();
-        for (int i = 0; i < nbrOfCells; i++) {
+		
+        for (int i = 0; i < nbrOfCells; i++) 
             visited.add(false);
-        }
-	}
-	
-	public void printMaze() {
-        System.out.print(" ");
-        for (int i = 0; i < width; i++) {
-            System.out.print("_ ");
-        }
-        System.out.println("");
-        for (int i = 0; i < (width * height); i++) {
-            Cell currentCell = paths.get(i);
-            if (isLeftEdge(currentCell)) {
-                System.out.print("|");
-            }
-            System.out.print(hasDown(currentCell) ? " " : "_");
-            System.out.print(hasRight(currentCell) ? (!isRightEdge(currentCell) ? " " : "") : "|");
-            if(i % width == width - 1) {
-                System.out.println("");
-            }
-        }
 	}
 	
 	public boolean isLeftEdge(Cell cell) {
         return (cell.getIndex() % width == 0);
     }
 
-    private boolean isRightEdge(Cell cell) {
-        return (cell.getIndex() % width == width - 1);
-    }
-
-    /*
-    private boolean hasUp(Cell cell) {
-        int upIndex = cell.getIndex() - width;
-        return hasPathToIndex(cell, upIndex);
-    }
-
-    private boolean hasLeft(Cell cell) {
-        int leftIndex = cell.getIndex() - 1;
-        return hasPathToIndex(cell, leftIndex);
-    }*/
-
     public boolean hasRight(Cell cell) {
         int rightIndex = cell.getIndex() + 1;
-        return hasPathToIndex(cell, rightIndex);
+        return cellIsConnectedToIndex(cell, rightIndex);
     }
 
     public boolean hasDown(Cell cell) {
         int downIndex = cell.getIndex() + width;
-        return hasPathToIndex(cell, downIndex);
+        return cellIsConnectedToIndex(cell, downIndex);
     }
 
-    private boolean hasPathToIndex(Cell cell, int matchIndex) {
-        ArrayList<Cell> neighbours = cell.getCellOut();
+    private boolean cellIsConnectedToIndex(Cell cell, int matchIndex) {
+        ArrayList<Cell> neighbours = cell.getConnectedCells();
         for (Cell neighbour : neighbours) {
             if (neighbour.getIndex() == matchIndex) {
                 return true;
@@ -174,7 +145,7 @@ public class RecursiveBacktracker {
     	return paths;
     }
     
-    public Cell getCellAtPaths(int index) {
+    public Cell getCellInAvailablePaths(int index) {
     	return paths.get(index);
     }
     
