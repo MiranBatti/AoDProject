@@ -5,7 +5,16 @@ import java.util.Random;
 
 import model.Cell;
 import util.ArrayStack;
-
+/**
+ * Maze generator, inspired by: http://weblog.jamisbuck.org/2010/12/27/maze-generation-recursive-backtracking 
+ * and https://github.com/Solisol/labyrinth and https://en.wikipedia.org/wiki/Maze_generation_algorithm
+ * 
+ * @author Miran Batti
+ * @author Fredrik Lindorf
+ * 
+ * @version 2016-01-08
+ * 
+ */
 public class RecursiveBacktracker {
 
 	private int width, height;
@@ -14,8 +23,13 @@ public class RecursiveBacktracker {
 	private ArrayList<Boolean> visited;
 	private ArrayStack<Cell> stack;
 	private Random rnd;
-	
-	
+
+	/**
+	 * Create maze when calling this constructor.
+	 * 
+	 * @param width
+	 * @param height
+	 */
 	public RecursiveBacktracker(int width, int height) {
 		this.width = width;
 		this.height = height;
@@ -28,32 +42,33 @@ public class RecursiveBacktracker {
 	private void generateMaze() {
 		rnd = new Random();		
 		stack = new ArrayStack<Cell>();		
+		int startingCellIndex = 0; 
 		
-		Cell cell = getCellIndex(0);
-		stack.push(cell);
+		Cell currentCell = cells.get(startingCellIndex); //TODO: pick random cell index instead
+		stack.push(currentCell);
 		
-		while(!stack.isEmpty()) {
-			cell = stack.pop();
-			visited.set(cell.getIndex(), true);
-			cell.setOutNodes(getNeighbours(cell));
-			updateCell(cell);
+		while(!stack.isEmpty()) { //while there are unvisited cells...
+			currentCell = stack.pop();
+			visited.set(currentCell.getIndex(), true); //set current cell as visited
+			currentCell.setConnectedCells(getNeighbours(currentCell));
+			cells.set(currentCell.getIndex(), currentCell);
 			
-			if(cell.getCellOut().size() > 0) {
-				ArrayList<Cell> neighbours = cell.getCellOut();
+			if(currentCell.getConnectedCells().size() > 0) { //if current cell has neighbours
+				ArrayList<Cell> neighbours = currentCell.getConnectedCells();
 				Cell rndNeighbour = neighbours.get(rnd.nextInt(neighbours.size()));
-				cell.removeFromNodes(rndNeighbour);
-				updateCell(cell);
+				currentCell.getConnectedCells().remove(rndNeighbour);
+				cells.set(currentCell.getIndex(), currentCell);
 				
-				Cell newCell = getCell2Index(cell.getIndex());
-				newCell.addToNodes(rndNeighbour);
-				updateCell2(newCell);
+				Cell newCell = paths.get(currentCell.getIndex());
+				newCell.getConnectedCells().add(rndNeighbour);
+				setPaths(newCell);
 				
-				Cell rndNewCell = getCell2Index(rndNeighbour.getIndex());
-				rndNewCell.addToNodes(newCell);
-				updateCell2(rndNewCell);
+				Cell rndNewCell = paths.get(rndNeighbour.getIndex());
+				rndNewCell.getConnectedCells().add(newCell);
+				setPaths(rndNewCell);
 				
-				stack.push(cell);
-				stack.push(rndNeighbour);
+				stack.push(currentCell);
+				stack.push(rndNeighbour); //pick a random neighbour
 			}
 		}
 	}
@@ -64,124 +79,106 @@ public class RecursiveBacktracker {
 		int size = width * height;
 		
 		if(index >= width && !visited.get(index - width)) // North
-			neighbours.add(getCellIndex(index - width));
+			neighbours.add(cells.get(index - width));
 		if(index < size - width && !visited.get(index + width)) // South
-			neighbours.add(getCellIndex(index + width));
+			neighbours.add(cells.get(index + width));
 		if(index % width != 0 && !visited.get(index - 1)) // East
-			neighbours.add(getCellIndex(index - 1));
+			neighbours.add(cells.get(index - 1));
 		if(index % width != (width - 1) && !visited.get(index + 1)) // West // kontrollera arg..
-			neighbours.add(getCellIndex(index + 1));
+			neighbours.add(cells.get(index + 1));
 		
 		return neighbours;
-	}
+	}	
 	
-	public Cell getCellIndex(int index) {
-        return cells.get(index);
-    }
-	
-	private Cell getCell2Index(int index) {
-        return paths.get(index);
-    }
-	
-	private void updateCell(Cell newCell) {
-		cells.set(newCell.getIndex(), newCell);
-	}
-	
-	private void updateCell2(Cell newCell) {
+	private void setPaths(Cell newCell) {
 		paths.set(newCell.getIndex(), newCell);
 	}
 	
 	private void initCells(int nbrOfCells) {
 		cells = new ArrayList<Cell>();
-        for (int i = 0; i < nbrOfCells; i++) {
+		
+        for (int i = 0; i < nbrOfCells; i++) 
             cells.add(new Cell(i));
-        }
 	}
 	
 	private void initPathCells(int nbrOfCells) {
 		paths = new ArrayList<Cell>();
-        for (int i = 0; i < nbrOfCells; i++) {
+		
+        for (int i = 0; i < nbrOfCells; i++) 
             paths.add(new Cell(i));
-        }
-	}
+    }
 	
 	private void initVisited(int nbrOfCells) {
 		visited = new ArrayList<Boolean>();
-        for (int i = 0; i < nbrOfCells; i++) {
+		
+        for (int i = 0; i < nbrOfCells; i++) 
             visited.add(false);
-        }
 	}
 	
-	public void printMaze() {
-        System.out.print(" ");
-        for (int i = 0; i < width; i++) {
-            System.out.print("_ ");
-        }
-        System.out.println("");
-        for (int i = 0; i < (width * height); i++) {
-            Cell currentCell = paths.get(i);
-            if (isLeftEdge(currentCell)) {
-                System.out.print("|");
-            }
-            System.out.print(hasDown(currentCell) ? " " : "_");
-            System.out.print(hasRight(currentCell) ? (!isRightEdge(currentCell) ? " " : "") : "|");
-            if(i % width == width - 1) {
-                System.out.println("");
-            }
-        }
-	}
-	
+	/**
+	 * Check if cell is at the left edge of maze
+	 * @param cell
+	 * @return true if cell index is at the left edge, false otherwise
+	 */
 	public boolean isLeftEdge(Cell cell) {
         return (cell.getIndex() % width == 0);
     }
 
-    private boolean isRightEdge(Cell cell) {
-        return (cell.getIndex() % width == width - 1);
-    }
-
-    /*
-    private boolean hasUp(Cell cell) {
-        int upIndex = cell.getIndex() - width;
-        return hasPathToIndex(cell, upIndex);
-    }
-
-    private boolean hasLeft(Cell cell) {
-        int leftIndex = cell.getIndex() - 1;
-        return hasPathToIndex(cell, leftIndex);
-    }*/
-
+	/**
+	 * Check if cell is connected to a cell to the right 
+	 * 
+	 * @param cell
+	 * @return true if cell is connected to cell to the right, false otherwise
+	 */
     public boolean hasRight(Cell cell) {
         int rightIndex = cell.getIndex() + 1;
-        return hasPathToIndex(cell, rightIndex);
-    }
-
-    public boolean hasDown(Cell cell) {
-        int downIndex = cell.getIndex() + width;
-        return hasPathToIndex(cell, downIndex);
-    }
-
-    private boolean hasPathToIndex(Cell cell, int matchIndex) {
-        ArrayList<Cell> neighbours = cell.getCellOut();
-        for (Cell neighbour : neighbours) {
-            if (neighbour.getIndex() == matchIndex) {
+        ArrayList<Cell> neighbours = cell.getConnectedCells();
+        
+        for (Cell neighbour : neighbours) { //foreach checks if cell is connected with cell to the right.
+            if (neighbour.getIndex() == rightIndex) {
                 return true;
             }
         }
         return false;
     }
+
+    /**
+     * Check if cell is connected with cell below
+     * 
+     * @param cell
+     * @return true if cell is connected with cell below, false otherwise
+     */
+    public boolean hasDown(Cell cell) {
+        int downIndex = cell.getIndex() + width;
+        ArrayList<Cell> neighbours = cell.getConnectedCells();
+        
+        for (Cell neighbour : neighbours) { //foreach checks if cell is connected with cell below
+            if (neighbour.getIndex() == downIndex) 
+                return true;
+        }
+        return false;
+    }
     
+    /**
+     * Returns an arraylist with cells
+     * @return ArrayList path containing cells with connected cells
+     */
     public ArrayList<Cell> getPaths() {
     	return paths;
     }
     
-    public Cell getCellAtPaths(int index) {
-    	return paths.get(index);
-    }
-    
+    /**
+     * Returns the width of this maze
+     * @return the width of this maze
+     */
     public int getWidth() {
     	return width;
     }
     
+    /**
+     * Returns the height of this maze
+     * @return the height of this maze
+     */
     public int getHeight() {
     	return height;
     }

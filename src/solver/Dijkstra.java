@@ -1,81 +1,98 @@
 package solver;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.PriorityQueue;
-
 import builder.RecursiveBacktracker;
-import gui.Board;
 import model.Cell;
 import model.Path;
+import util.MyHeapPriorityQueue;
 
+/**
+ * Maze solver using Dijkstra's algorithm
+ * 
+ * Inspired by: https://github.com/Solisol/labyrinth and https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
+ * 
+ * @author Miran Batti
+ * @author Fredrik Lindorf
+ * 
+ * @version 2016-01-10
+ *
+ */
 public class Dijkstra {
 	private RecursiveBacktracker maze;
-	private LinkedList<PathFinderListener> listenerList;
+	private LinkedList<DijkstraListener> listenerList;
 	
+	/**
+	 * Dijkstra's Algorithm, finds shortest path to the end of given maze
+	 * 
+	 * @param maze
+	 */
 	public Dijkstra(RecursiveBacktracker maze) {
 		this.maze = maze;
-		listenerList = new LinkedList<PathFinderListener>();
+		listenerList = new LinkedList<DijkstraListener>();
 	}
 	
+	/**
+	 * Start solving maze
+	 */
 	public void solve() {
 		HashSet<Cell> visited = new HashSet<Cell>();
-		PriorityQueue<Path> availablePaths = new PriorityQueue<Path>();
+		MyHeapPriorityQueue<Path> availablePaths = new MyHeapPriorityQueue<Path>();
 		Path path = new Path();
-		ArrayList<Cell> p = maze.getPaths();
-		int size = maze.getHeight() * maze.getWidth();
-		
+		int area = maze.getHeight() * maze.getWidth();
 		int start = 0;
-		int end = size - 1;
+		int end = area - 1;
 		Cell currentCell = maze.getPaths().get(start);
-		path.add(currentCell);
-		availablePaths.add(path);
 		
-		while(!availablePaths.isEmpty()) {
-			Path currentPath = availablePaths.poll();
-			Cell endCell = currentPath.getNodes().getLast();
+		path.add(currentCell);
+		availablePaths.enqueue(path);
+		
+		while(true) {
+			Path currentPath = availablePaths.dequeue();
+			currentCell = currentPath.getNodes().getLast();
 			
-			if(visited.contains(endCell))
-				continue;
-			visited.add(endCell);
-			raiseTakenCell(endCell.getIndex());
-			
-			if(endCell.getIndex() == end) {
-				raiseEndCellFound(currentPath.getNodes());
-				return;
+			if(currentCell.getIndex() == end) { //When the end of the maze has been found
+				mazeSolved(currentPath.getNodes());
+				break;
 			}
 			
-			for (Cell neighbours : endCell.getCellOut()) {
+			visited.add(currentCell);
+			raiseUsedCell(currentCell.getIndex());
+			
+			for (Cell neighbours : currentCell.getConnectedCells()) {
 				if(!visited.contains(neighbours)) {
-					Path tmp = currentPath.clone();
-					tmp.add(maze.getCellAtPaths(neighbours.getIndex()));
-					availablePaths.add(tmp);
-					raiseCellGetsPickeable(neighbours.getIndex());
+					Path tmp = currentPath.clone(); 
+					tmp.add(maze.getPaths().get(neighbours.getIndex()));
+					availablePaths.enqueue(tmp);
+					raisePickedCell(neighbours.getIndex());
 				}
 			}
 		}
 	}
 	
-	private void raiseTakenCell(int index) {
-		for (PathFinderListener pathFinderListener : listenerList) {
-			pathFinderListener.takenCell(index);
+	private void raiseUsedCell(int index) {
+		for (DijkstraListener pathFinderListener : listenerList) {
+			pathFinderListener.usedCell(index);
 		}
 	}
 	
-	private void raiseEndCellFound(LinkedList<Cell> path) {
-		for (PathFinderListener pathFinderListener : listenerList) {
-			pathFinderListener.endCellFound(path);
+	private void mazeSolved(LinkedList<Cell> path) {
+		for (DijkstraListener pathFinderListener : listenerList) {
+			pathFinderListener.mazeSolved(path);
 		}
 	}
 	
-	private void raiseCellGetsPickeable(int index) {
-        for (PathFinderListener pathFinderListener : listenerList) {
-			pathFinderListener.cellGetsPickable(index);
+	private void raisePickedCell(int index) {
+        for (DijkstraListener pathFinderListener : listenerList) {
+			pathFinderListener.cellGetsPicked(index);
 		}
     }
 	
-	public void addListener(PathFinderListener listener) {
+	/**
+	 * Add object of the type of PathFinderListener
+	 * @param listener
+	 */
+	public void addListener(DijkstraListener listener) {
         listenerList.add(listener);
     }
 	

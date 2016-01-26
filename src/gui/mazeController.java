@@ -11,6 +11,15 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import solver.Dijkstra;
 
+/**
+ * Window containing the maze. Needs SwingNode to represent Board.
+ * 
+ * @author Miran Batti
+ * @author Fredrik Lindorf
+ * 
+ * @version 2016-01-12
+ *
+ */
 public class mazeController implements Initializable {
 
 	private Board board;
@@ -26,7 +35,6 @@ public class mazeController implements Initializable {
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		// TODO Auto-generated method stub
 		maze = new RecursiveBacktracker(width, height);
 		solver = new Dijkstra(maze);		
 		board = new Board(maze);
@@ -37,10 +45,18 @@ public class mazeController implements Initializable {
 		stack.getChildren().add(node);
 	}
 	
+	/**
+	 * Set maze width from menuController
+	 * @param width
+	 */
 	public static void setWidth(int width) {
 		mazeController.width = width;
 	}
 	
+	/**
+	 * Set maze height from menuController
+	 * @param height
+	 */
 	public static void setHeight(int height) {
 		mazeController.height = height;
 	}
