@@ -7,6 +7,9 @@ package util;
  * @author Fredrik Lindorf
  * 
  * @version 2015-12-01
+ * 
+ * Stack resizes after max capacity has been reached.
+ * @version 2016-01-08
  *
  * @param <V>
  */
@@ -40,7 +43,7 @@ public class ArrayStack<V> implements Stack<V> {
 			if(top != -1)
 				top--;
 		}
-		System.out.println("Stacken har tömts.");
+		System.out.println("Stack has been cleared.");
 	}
 
 	/**
