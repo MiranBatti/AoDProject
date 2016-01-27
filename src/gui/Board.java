@@ -37,6 +37,7 @@ public class Board extends JPanel implements DijkstraListener {
         area = width * height;
         tiles = new Color[area];
         Arrays.fill(tiles, Color.white);
+        repaint();
     }
 
     @Override
@@ -95,8 +96,8 @@ public class Board extends JPanel implements DijkstraListener {
         for (Cell cell : path) 
             tiles[cell.getIndex()] = Color.blue; //Paint solution path blue
         
-        tiles[path.getFirst().getIndex()] = Color.green; //Paint start cell green
-        tiles[path.getLast().getIndex()] = Color.green; //Paint end cell green
+        tiles[path.getFirst().getIndex()] = Color.yellow; //Paint start cell yellow
+        tiles[path.getLast().getIndex()] = Color.yellow; //Paint end cell yellow
         repaint();
     }
 }
