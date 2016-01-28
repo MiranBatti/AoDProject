@@ -49,10 +49,10 @@ public class Dijkstra {
 		
 		while(true) {
 			Path currentPath = availablePaths.dequeue();
-			currentCell = currentPath.getNodes().getLast();
+			currentCell = currentPath.getCells().getLast();
 			
 			if(currentCell.getIndex() == end) { //When the end of the maze has been found
-				mazeSolved(currentPath.getNodes());
+				mazeSolved(currentPath.getCells());
 				break;
 			}
 			

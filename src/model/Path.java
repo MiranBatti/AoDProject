@@ -1,7 +1,9 @@
 package model;
 
 import java.util.LinkedList;
-
+/*
+ * Code from https://github.com/Solisol/labyrinth
+ */
 public class Path implements Comparable<Path>{
     private LinkedList<Cell> cells;
 
