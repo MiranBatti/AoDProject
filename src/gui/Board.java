@@ -87,14 +87,14 @@ public class Board extends JPanel implements DijkstraListener {
 
     @Override
     public void usedCell(int index) {
-        tiles[index] = Color.pink;
+        tiles[index] = new Color(230,105,180, 160);
         repaint();
     }
 
     @Override
     public void mazeSolved(LinkedList<Cell> path) {
         for (Cell cell : path) 
-            tiles[cell.getIndex()] = Color.blue; //Paint solution path blue
+            tiles[cell.getIndex()] = new Color(0, 191, 255, 255); //Paint solution path blue
         
         tiles[path.getFirst().getIndex()] = Color.yellow; //Paint start cell yellow
         tiles[path.getLast().getIndex()] = Color.yellow; //Paint end cell yellow

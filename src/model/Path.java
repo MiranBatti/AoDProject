@@ -2,14 +2,6 @@ package model;
 
 import java.util.LinkedList;
 
-/**
- * 
- * @author Miran Batti
- * @author Fredrik Lindorf
- * 
- * @version 2016-01-09
- *
- */
 public class Path implements Comparable<Path>{
     private LinkedList<Cell> cells;
 
@@ -21,7 +13,7 @@ public class Path implements Comparable<Path>{
         this.cells = cells;
     }
 
-    public LinkedList<Cell> getNodes() {
+    public LinkedList<Cell> getCells() {
         return cells;
     }
 
